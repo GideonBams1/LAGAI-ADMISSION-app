@@ -101,11 +101,11 @@ export default function Landing() {
 
       {/* ═══ NAVBAR ═══════════════════════════════════════════════════════════ */}
       <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center">
             <img
               src="https://laga-institute.org/wp-content/uploads/2026/03/cropped-Black_White_Modern_Monogram_CR_Logo_Design-removebg-preview-133x50.png"
-              alt="LAGAI Institute" className="h-9 object-contain"
+              alt="LAGAI Institute" className="h-8 md:h-9 object-contain"
             />
           </Link>
           <div className="hidden md:flex items-center gap-7 text-sm font-medium text-gray-600">
@@ -113,14 +113,14 @@ export default function Landing() {
             <a href="https://laga-institute.org/about-us/"  target="_blank" rel="noreferrer" className="hover:text-gray-900 transition-colors">About LAGAI</a>
             <a href="https://laga-institute.org/contact/"   target="_blank" rel="noreferrer" className="hover:text-gray-900 transition-colors">Contact</a>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
             <Link to="/login"
-              className="text-sm font-medium text-gray-700 border border-gray-300 px-4 py-2 rounded-lg hover:border-gray-500 transition-colors">
+              className="text-sm font-medium text-gray-700 border border-gray-300 px-3 md:px-4 py-2 rounded-lg hover:border-gray-500 transition-colors">
               Sign In
             </Link>
             <Link to="/register"
-              className="text-sm font-bold text-white bg-zinc-900 px-5 py-2 rounded-lg hover:bg-zinc-700 transition-colors">
-              Apply Now — 2026
+              className="text-sm font-bold text-white bg-zinc-900 px-3 md:px-5 py-2 rounded-lg hover:bg-zinc-700 transition-colors whitespace-nowrap">
+              Apply Now<span className="hidden sm:inline"> — 2026</span>
             </Link>
           </div>
         </div>
@@ -137,40 +137,40 @@ export default function Landing() {
           <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/95 to-zinc-900/50" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 py-28">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-28">
           <div className="max-w-3xl">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-amber-400/15 border border-amber-400/40 text-amber-400 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-widest mb-10">
+            <div className="inline-flex items-center gap-2 bg-amber-400/15 border border-amber-400/40 text-amber-400 rounded-full px-3 md:px-4 py-1.5 text-xs font-bold uppercase tracking-widest mb-7 md:mb-10">
               <span className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
               2026 Admissions Now Open
             </div>
 
             {/* Heading */}
-            <h1 className="text-6xl md:text-8xl font-black text-white leading-none tracking-tight mb-8">
+            <h1 className="text-4xl sm:text-6xl md:text-8xl font-black text-white leading-none tracking-tight mb-6 md:mb-8">
               Shape Your<br />
               Future with<br />
               <span style={{ color: '#C9A84C' }}>LAGAI</span>
             </h1>
 
-            <p className="text-xl text-zinc-300 max-w-xl mb-3 leading-relaxed">
+            <p className="text-base md:text-xl text-zinc-300 max-w-xl mb-3 leading-relaxed">
               A <strong className="text-white">German–Luso–African</strong> hub for vocational excellence
               and cultural research, connecting four nations through transformative education.
             </p>
-            <p className="text-xs text-zinc-500 uppercase tracking-widest mb-12">
+            <p className="text-xs text-zinc-500 uppercase tracking-widest mb-8 md:mb-12">
               Luso Anglo German African Institute of Vocational Education &amp; Cultural Research
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
               <Link to="/register?role=student"
-                className="inline-flex items-center justify-center gap-2 font-bold px-8 py-4 rounded-xl text-base transition-colors text-zinc-950"
+                className="inline-flex items-center justify-center gap-2 font-bold px-5 py-3 md:px-8 md:py-4 rounded-xl text-sm md:text-base transition-colors text-zinc-950"
                 style={{ backgroundColor: '#C9A84C' }}
                 onMouseEnter={e => e.currentTarget.style.backgroundColor = '#b8973f'}
                 onMouseLeave={e => e.currentTarget.style.backgroundColor = '#C9A84C'}>
-                Find Your Programme <ArrowRight className="w-5 h-5" />
+                Find Your Programme <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
               </Link>
               <Link to="/register?role=recruiter"
-                className="inline-flex items-center justify-center gap-2 border border-white/25 text-white font-semibold px-8 py-4 rounded-xl hover:bg-white/10 transition-colors text-base">
-                Become a Recruiter <ChevronRight className="w-5 h-5" />
+                className="inline-flex items-center justify-center gap-2 border border-white/25 text-white font-semibold px-5 py-3 md:px-8 md:py-4 rounded-xl hover:bg-white/10 transition-colors text-sm md:text-base">
+                Become a Recruiter <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
               </Link>
             </div>
           </div>
@@ -184,8 +184,8 @@ export default function Landing() {
       </section>
 
       {/* ═══ STATS ════════════════════════════════════════════════════════════ */}
-      <section className="bg-zinc-900 py-16">
-        <div className="max-w-4xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+      <section className="bg-zinc-900 py-12 md:py-16">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-center">
           {[
             { target: 11, suffix: '',  label: 'Expertise Areas'      },
             { target: 9,  suffix: '',  label: 'Global Programmes'     },
@@ -193,7 +193,7 @@ export default function Landing() {
             { target: 7,  suffix: '+', label: 'Institutional Partners'},
           ].map(s => (
             <div key={s.label}>
-              <p className="text-5xl font-black" style={{ color: '#C9A84C' }}>
+              <p className="text-4xl md:text-5xl font-black" style={{ color: '#C9A84C' }}>
                 <CountUp target={s.target} suffix={s.suffix} />
               </p>
               <p className="text-zinc-400 text-xs mt-2 uppercase tracking-wider">{s.label}</p>
@@ -203,17 +203,17 @@ export default function Landing() {
       </section>
 
       {/* ═══ ABOUT — ONE INSTITUTE, DUAL SYSTEMS ════════════════════════════ */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
+      <section className="py-16 md:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 grid md:grid-cols-2 gap-8 md:gap-16 items-center">
           <div>
             <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#C9A84C' }}>
               Established Excellence
             </p>
-            <h2 className="text-5xl font-black text-zinc-900 leading-tight mb-6">
+            <h2 className="text-3xl md:text-5xl font-black text-zinc-900 leading-tight mb-6">
               One Institute —<br />
               <em className="font-black italic text-zinc-400">Dual Systems</em>
             </h2>
-            <p className="text-zinc-600 text-lg leading-relaxed mb-5">
+            <p className="text-zinc-600 text-base md:text-lg leading-relaxed mb-5">
               The <strong>Luso Anglo German African Institute (LAGAI)</strong> is a multi-disciplinary hub of
               innovation, drawing on rich educational traditions from four nations to create a unique and
               powerful learning ecosystem.
@@ -228,27 +228,27 @@ export default function Landing() {
             </blockquote>
           </div>
 
-          <div className="relative">
+          <div className="relative pb-6 md:pb-0">
             <div className="aspect-video rounded-2xl overflow-hidden shadow-2xl">
               <img
                 src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800&q=80"
                 alt="LAGAI education" className="w-full h-full object-cover"
               />
             </div>
-            <div className="absolute -bottom-6 -left-6 rounded-2xl p-5 shadow-xl text-zinc-950" style={{ backgroundColor: '#C9A84C' }}>
-              <p className="text-3xl font-black">9</p>
-              <p className="text-sm font-bold">Programmes</p>
+            <div className="absolute -bottom-4 -left-2 md:-bottom-6 md:-left-6 rounded-2xl p-4 md:p-5 shadow-xl text-zinc-950" style={{ backgroundColor: '#C9A84C' }}>
+              <p className="text-2xl md:text-3xl font-black">9</p>
+              <p className="text-xs md:text-sm font-bold">Programmes</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* ═══ GLOBAL REACH ════════════════════════════════════════════════════ */}
-      <section className="py-24 bg-zinc-950 text-white">
-        <div className="max-w-7xl mx-auto px-6">
+      <section className="py-16 md:py-24 bg-zinc-950 text-white">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
           <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#C9A84C' }}>Our Global Footprint</p>
-          <h2 className="text-4xl md:text-5xl font-black mb-14">Our Global Reach</h2>
-          <div className="grid md:grid-cols-4 gap-5">
+          <h2 className="text-3xl md:text-5xl font-black mb-10 md:mb-14">Our Global Reach</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
             {NATIONS.map(n => (
               <div key={n.country} className="group rounded-2xl overflow-hidden bg-zinc-900 hover:bg-zinc-800 transition-colors">
                 <div className="aspect-video overflow-hidden">
@@ -257,9 +257,9 @@ export default function Landing() {
                     className="w-full h-full object-cover opacity-60 group-hover:opacity-80 group-hover:scale-105 transition-all duration-500"
                   />
                 </div>
-                <div className="p-5">
+                <div className="p-4 md:p-5">
                   <p className="text-xs font-bold mb-1" style={{ color: '#C9A84C' }}>{n.num}</p>
-                  <h3 className="font-bold text-lg mb-2">{n.flag} {n.country}</h3>
+                  <h3 className="font-bold text-base md:text-lg mb-2">{n.flag} {n.country}</h3>
                   <p className="text-zinc-400 text-sm leading-relaxed">{n.desc}</p>
                 </div>
               </div>
@@ -269,14 +269,14 @@ export default function Landing() {
       </section>
 
       {/* ═══ THREE PORTALS ════════════════════════════════════════════════════ */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
+      <section className="py-16 md:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="text-center mb-10 md:mb-16">
             <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: '#C9A84C' }}>Admissions Platform</p>
-            <h2 className="text-4xl md:text-5xl font-black text-zinc-900 mb-4">Three Portals, One Platform</h2>
-            <p className="text-zinc-500 max-w-md mx-auto">Role-specific dashboards for students, education recruiters, and LAGAI administrators.</p>
+            <h2 className="text-3xl md:text-5xl font-black text-zinc-900 mb-4">Three Portals, One Platform</h2>
+            <p className="text-zinc-500 max-w-md mx-auto text-sm md:text-base">Role-specific dashboards for students, education recruiters, and LAGAI administrators.</p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-5 md:gap-6">
             {[
               {
                 num: '01', bg: 'bg-blue-600', title: 'Student Portal', cta: 'Register as Student', link: '/register?role=student',
@@ -291,14 +291,14 @@ export default function Landing() {
                 items: ['Review & process all applications', 'Manage the programme catalogue', 'Approve or suspend recruiters', 'Process commissions & payouts'],
               },
             ].map(p => (
-              <div key={p.title} className="group border border-gray-100 rounded-2xl p-8 hover:shadow-xl transition-all hover:-translate-y-0.5">
+              <div key={p.title} className="group border border-gray-100 rounded-2xl p-6 md:p-8 hover:shadow-xl transition-all hover:-translate-y-0.5">
                 <div
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 ${p.bg}`}
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center mb-5 md:mb-6 ${p.bg}`}
                   style={p.gold ? { backgroundColor: '#C9A84C' } : {}}>
                   <span className="text-white font-black text-sm">{p.num}</span>
                 </div>
-                <h3 className="text-xl font-black text-zinc-900 mb-5">{p.title}</h3>
-                <ul className="space-y-3 mb-8">
+                <h3 className="text-xl font-black text-zinc-900 mb-4 md:mb-5">{p.title}</h3>
+                <ul className="space-y-2.5 md:space-y-3 mb-7 md:mb-8">
                   {p.items.map(item => (
                     <li key={item} className="flex items-start gap-2.5 text-sm text-zinc-600">
                       <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#C9A84C' }} />
@@ -308,7 +308,6 @@ export default function Landing() {
                 </ul>
                 <Link to={p.link}
                   className="inline-flex items-center gap-2 text-sm font-bold text-zinc-900 transition-all group-hover:gap-3"
-                  style={{}}
                   onMouseEnter={e => { e.currentTarget.style.color = '#C9A84C' }}
                   onMouseLeave={e => { e.currentTarget.style.color = '#111' }}>
                   {p.cta} <ArrowRight className="w-4 h-4" />
@@ -320,22 +319,22 @@ export default function Landing() {
       </section>
 
       {/* ═══ PROGRAMMES ══════════════════════════════════════════════════════ */}
-      <section className="py-24 bg-zinc-50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-end justify-between mb-14">
+      <section className="py-16 md:py-24 bg-zinc-50">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="flex items-end justify-between mb-8 md:mb-14">
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: '#C9A84C' }}>What We Offer</p>
-              <h2 className="text-4xl md:text-5xl font-black text-zinc-900">Our Programmes</h2>
+              <p className="text-xs font-bold uppercase tracking-widest mb-2 md:mb-3" style={{ color: '#C9A84C' }}>What We Offer</p>
+              <h2 className="text-3xl md:text-5xl font-black text-zinc-900">Our Programmes</h2>
             </div>
             <a href="https://laga-institute.org/academics/" target="_blank" rel="noreferrer"
               className="hidden md:inline-flex items-center gap-2 text-sm font-bold text-zinc-600 hover:text-zinc-900 transition-colors">
               Explore on LAGAI.org <ExternalLink className="w-4 h-4" />
             </a>
           </div>
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
             {PROGRAMMES.map(p => (
-              <div key={p.name} className="bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-lg hover:-translate-y-0.5 transition-all group">
-                <div className="flex items-center justify-between mb-4">
+              <div key={p.name} className="bg-white rounded-2xl p-5 md:p-6 border border-gray-100 hover:shadow-lg hover:-translate-y-0.5 transition-all group">
+                <div className="flex items-center justify-between mb-3 md:mb-4">
                   <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
                     p.level === 'Undergraduate' ? 'bg-blue-50 text-blue-700' :
                     p.level === 'Postgraduate'  ? 'bg-purple-50 text-purple-700' :
@@ -343,11 +342,11 @@ export default function Landing() {
                   }`}>{p.level}</span>
                   <span className="text-xs text-zinc-400">{p.duration}</span>
                 </div>
-                <h3 className="font-black text-zinc-900 mb-4 leading-snug text-base group-hover:transition-colors" style={{}}>
+                <h3 className="font-black text-zinc-900 mb-3 md:mb-4 leading-snug text-sm md:text-base">
                   {p.name}
                 </h3>
-                <div className="flex items-center justify-between border-t border-gray-100 pt-4">
-                  <span className="text-xl font-black text-zinc-900">
+                <div className="flex items-center justify-between border-t border-gray-100 pt-3 md:pt-4">
+                  <span className="text-lg md:text-xl font-black text-zinc-900">
                     {p.fee}<span className="text-xs font-normal text-zinc-400 ml-0.5">/yr</span>
                   </span>
                   <Link to="/register?role=student"
@@ -363,14 +362,14 @@ export default function Landing() {
       </section>
 
       {/* ═══ DUAL SYSTEM ═════════════════════════════════════════════════════ */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-6">
+      <section className="py-16 md:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 grid md:grid-cols-2 gap-4 md:gap-6">
           {/* European Standards */}
-          <div className="bg-zinc-950 rounded-2xl p-10 text-white">
+          <div className="bg-zinc-950 rounded-2xl p-7 md:p-10 text-white">
             <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: '#C9A84C' }}>01 · System One</p>
-            <h3 className="text-4xl font-black leading-tight mb-1">European</h3>
-            <h3 className="text-4xl font-black italic text-zinc-500 mb-7">Standards</h3>
-            <p className="text-zinc-400 leading-relaxed mb-8">
+            <h3 className="text-3xl md:text-4xl font-black leading-tight mb-1">European</h3>
+            <h3 className="text-3xl md:text-4xl font-black italic text-zinc-500 mb-6 md:mb-7">Standards</h3>
+            <p className="text-zinc-400 leading-relaxed mb-6 md:mb-8 text-sm md:text-base">
               Drawing on Germany's world-renowned dual vocational system and Portugal's academic rigour, LAGAI's
               European pillar ensures every qualification meets internationally recognised benchmarks.
             </p>
@@ -384,11 +383,11 @@ export default function Landing() {
             </ul>
           </div>
           {/* African Ingenuity */}
-          <div className="rounded-2xl p-10 text-zinc-950" style={{ backgroundColor: '#C9A84C' }}>
+          <div className="rounded-2xl p-7 md:p-10 text-zinc-950" style={{ backgroundColor: '#C9A84C' }}>
             <p className="text-xs font-bold uppercase tracking-widest mb-3 text-zinc-700">02 · System Two</p>
-            <h3 className="text-4xl font-black leading-tight mb-1">African</h3>
-            <h3 className="text-4xl font-black italic text-zinc-700 mb-7">Ingenuity</h3>
-            <p className="text-zinc-700 leading-relaxed mb-8">
+            <h3 className="text-3xl md:text-4xl font-black leading-tight mb-1">African</h3>
+            <h3 className="text-3xl md:text-4xl font-black italic text-zinc-700 mb-6 md:mb-7">Ingenuity</h3>
+            <p className="text-zinc-700 leading-relaxed mb-6 md:mb-8 text-sm md:text-base">
               Rooted in African cultural wisdom and the dynamism of emerging markets, LAGAI's African pillar
               brings contextual relevance, entrepreneurial spirit, and community-centred learning.
             </p>
@@ -405,16 +404,16 @@ export default function Landing() {
       </section>
 
       {/* ═══ ACCREDITATIONS ══════════════════════════════════════════════════ */}
-      <section className="py-20 bg-zinc-50">
-        <div className="max-w-7xl mx-auto px-6">
-          <p className="text-center text-xs text-zinc-500 font-bold uppercase tracking-widest mb-12">
+      <section className="py-16 md:py-20 bg-zinc-50">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <p className="text-center text-xs text-zinc-500 font-bold uppercase tracking-widest mb-8 md:mb-12">
             Affiliations &amp; Recognition
           </p>
-          <div className="flex flex-wrap justify-center items-center gap-10">
+          <div className="flex flex-wrap justify-center items-center gap-6 md:gap-10">
             {ACCREDITATIONS.map(a => (
               <a key={a.name} href={a.href} target="_blank" rel="noreferrer"
                 className="grayscale hover:grayscale-0 opacity-50 hover:opacity-100 transition-all duration-300">
-                <img src={a.logo} alt={a.name} className="h-10 object-contain" />
+                <img src={a.logo} alt={a.name} className="h-8 md:h-10 object-contain" />
               </a>
             ))}
           </div>
@@ -422,25 +421,25 @@ export default function Landing() {
       </section>
 
       {/* ═══ CTA BANNER ══════════════════════════════════════════════════════ */}
-      <section className="py-28 bg-zinc-950 text-white text-center relative overflow-hidden">
+      <section className="py-16 md:py-28 bg-zinc-950 text-white text-center relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: 'radial-gradient(ellipse at 25% 50%, rgba(201,168,76,0.12) 0%, transparent 60%), radial-gradient(ellipse at 75% 50%, rgba(201,168,76,0.08) 0%, transparent 60%)' }} />
-        <div className="relative max-w-3xl mx-auto px-6">
-          <h2 className="text-4xl md:text-6xl font-black mb-6">Ready to Begin<br />Your Journey?</h2>
-          <p className="text-zinc-400 mb-12 text-lg max-w-xl mx-auto">
+        <div className="relative max-w-3xl mx-auto px-4 md:px-6">
+          <h2 className="text-3xl sm:text-4xl md:text-6xl font-black mb-5 md:mb-6">Ready to Begin<br />Your Journey?</h2>
+          <p className="text-zinc-400 mb-8 md:mb-12 text-base md:text-lg max-w-xl mx-auto">
             Join a growing community of students and professionals earning internationally
             recognised qualifications across Cape Verde, Europe, and beyond.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
             <Link to="/register"
-              className="inline-flex items-center justify-center gap-2 font-bold px-10 py-4 rounded-xl text-base text-zinc-950 transition-colors"
+              className="inline-flex items-center justify-center gap-2 font-bold px-6 py-3 md:px-10 md:py-4 rounded-xl text-sm md:text-base text-zinc-950 transition-colors"
               style={{ backgroundColor: '#C9A84C' }}
               onMouseEnter={e => e.currentTarget.style.backgroundColor = '#b8973f'}
               onMouseLeave={e => e.currentTarget.style.backgroundColor = '#C9A84C'}>
-              Start Your Application <ArrowRight className="w-5 h-5" />
+              Start Your Application <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
             </Link>
             <a href="https://laga-institute.org/contact/" target="_blank" rel="noreferrer"
-              className="inline-flex items-center justify-center gap-2 border border-white/25 text-white font-semibold px-10 py-4 rounded-xl hover:bg-white/10 transition-colors text-base">
+              className="inline-flex items-center justify-center gap-2 border border-white/25 text-white font-semibold px-6 py-3 md:px-10 md:py-4 rounded-xl hover:bg-white/10 transition-colors text-sm md:text-base">
               Get in Touch <ExternalLink className="w-4 h-4" />
             </a>
           </div>
@@ -448,24 +447,23 @@ export default function Landing() {
       </section>
 
       {/* ═══ FOOTER ══════════════════════════════════════════════════════════ */}
-      <footer className="bg-zinc-950 border-t border-zinc-800 text-zinc-400 py-16">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-10 mb-14">
+      <footer className="bg-zinc-950 border-t border-zinc-800 text-zinc-400 py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-10 mb-10 md:mb-14">
             {/* Brand */}
-            <div className="md:col-span-2">
+            <div className="sm:col-span-2 md:col-span-2">
               <img
                 src="https://laga-institute.org/wp-content/uploads/2026/03/cropped-Black_White_Modern_Monogram_CR_Logo_Design-removebg-preview-133x50.png"
-                alt="LAGAI" className="h-10 object-contain mb-5" style={{ filter: 'brightness(10)' }}
+                alt="LAGAI" className="h-8 md:h-10 object-contain mb-4 md:mb-5" style={{ filter: 'brightness(10)' }}
               />
-              <p className="text-sm leading-relaxed max-w-xs mb-6">
+              <p className="text-sm leading-relaxed max-w-xs mb-5 md:mb-6">
                 Pioneering Institute of Vocational Education and Cultural Research. Where cultures,
                 knowledge, and innovation converge to build a sustainable future.
               </p>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 md:gap-3 flex-wrap">
                 {SOCIALS.map(s => (
                   <a key={s.label} href={s.href} target="_blank" rel="noreferrer"
                     className="w-8 h-8 bg-zinc-800 rounded-lg flex items-center justify-center text-xs font-bold text-zinc-400 hover:text-zinc-900 transition-colors"
-                    style={{}}
                     onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#C9A84C'; e.currentTarget.style.color = '#111' }}
                     onMouseLeave={e => { e.currentTarget.style.backgroundColor = ''; e.currentTarget.style.color = '' }}>
                     {s.label}
@@ -476,8 +474,8 @@ export default function Landing() {
 
             {/* Quick links */}
             <div>
-              <p className="text-white font-bold text-sm mb-6">Quick Links</p>
-              <div className="space-y-3 text-sm">
+              <p className="text-white font-bold text-sm mb-4 md:mb-6">Quick Links</p>
+              <div className="space-y-2.5 md:space-y-3 text-sm">
                 {[
                   { label: 'About LAGAI',       href: 'https://laga-institute.org/about-us/' },
                   { label: 'Academics',          href: 'https://laga-institute.org/academics/' },
@@ -495,8 +493,8 @@ export default function Landing() {
 
             {/* Contact */}
             <div>
-              <p className="text-white font-bold text-sm mb-6">Campus</p>
-              <div className="space-y-4 text-sm">
+              <p className="text-white font-bold text-sm mb-4 md:mb-6">Campus</p>
+              <div className="space-y-3 md:space-y-4 text-sm">
                 <p className="flex items-start gap-2.5">
                   <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#C9A84C' }} />
                   Zona Achada S. Filipe, 1897 RC,<br />7200 Praia, Cape Verde
@@ -519,9 +517,9 @@ export default function Landing() {
           </div>
 
           {/* Bottom bar */}
-          <div className="border-t border-zinc-800 pt-8 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-zinc-600">
-            <p>© 2026 LAGAI — Luso Anglo German African Institute of Vocational Education and Cultural Research. All rights reserved.</p>
-            <div className="flex items-center gap-5">
+          <div className="border-t border-zinc-800 pt-6 md:pt-8 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-zinc-600">
+            <p className="text-center sm:text-left">© 2026 LAGAI — Luso Anglo German African Institute of Vocational Education and Cultural Research. All rights reserved.</p>
+            <div className="flex items-center gap-4 md:gap-5">
               <a href="https://laga-institute.org/privacy-policy/" target="_blank" rel="noreferrer" className="hover:text-zinc-400 transition-colors">Privacy Policy</a>
               <a href="https://laga-institute.org/disclaimer/"     target="_blank" rel="noreferrer" className="hover:text-zinc-400 transition-colors">Disclaimer</a>
             </div>
