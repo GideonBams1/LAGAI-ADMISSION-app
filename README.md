@@ -1,6 +1,13 @@
-# UniApply — University Admissions & Recruiter Platform
+# LAGAI Admissions Portal
 
-A fully functional, free-to-deploy university admissions web app built with React, Tailwind CSS, and a localStorage-powered backend that is fully Supabase-ready.
+The official online admissions and recruiter management platform for the **Luso Anglo German African Institute of Vocational Education and Cultural Research (LAGAI)**.
+
+Built with React, Tailwind CSS, and a localStorage-powered backend that is fully Supabase-ready.
+
+🌐 **Institute website:** [laga-institute.org](https://laga-institute.org)
+📍 **Campus:** Zona Achada S. Filipe, 1897 RC, 7200 Praia, Cape Verde
+📞 **Phone:** +238 528 9397
+✉️ **Email:** info@laga-institute.org
 
 ---
 
@@ -8,7 +15,7 @@ A fully functional, free-to-deploy university admissions web app built with Reac
 
 | Portal | Features |
 |---|---|
-| **Student** | Register · Login · Browse Programmes · Multi-step Application Form · Document Upload · Track Status |
+| **Student** | Register · Login · Browse LAGAI Programmes · Multi-step Application Form · Document Upload · Track Status |
 | **Recruiter** | Register (pending approval) · Submit for Students · Track Pipeline · View Commissions |
 | **Admin** | Dashboard · Review Applications (Accept/Reject/Conditional) · Manage Programmes (CRUD) · Approve/Suspend Recruiters · Process Commissions |
 
@@ -32,10 +39,12 @@ A fully functional, free-to-deploy university admissions web app built with Reac
 
 ## 🚀 Quick Start (5 minutes)
 
-### 1. Install dependencies
+### 1. Copy to your Desktop and install
 
-```bash
-cd university-app
+```powershell
+# In PowerShell — copy the project to your Desktop
+Copy-Item -Path "$env:APPDATA\Claude\local-agent-mode-sessions\*\*\*\outputs\university-app" -Destination "$env:USERPROFILE\Desktop\university-app" -Recurse
+cd "$env:USERPROFILE\Desktop\university-app"
 npm install
 ```
 
@@ -51,7 +60,7 @@ The app will open at **http://localhost:5173**
 
 | Role | Email | Password |
 |---|---|---|
-| Admin | admin@uniapply.com | admin123 |
+| Admin | admin@laga-institute.org | admin123 |
 | Student | student@demo.com | demo123 |
 | Recruiter | recruiter@demo.com | demo123 |
 
@@ -59,14 +68,36 @@ The app will open at **http://localhost:5173**
 
 ## 🌐 Deploy to Vercel (Free)
 
-### Option A — GitHub + Vercel (Recommended)
+> **Important:** Make sure you have a `.gitignore` file that excludes `node_modules` before pushing to GitHub.
 
-1. Push this folder to a **GitHub repository**
-2. Go to [vercel.com](https://vercel.com) → **New Project**
-3. Import your GitHub repo
-4. Click **Deploy** — that's it! ✅
+### Step 1 — Create .gitignore (if not already present)
 
-Vercel auto-detects Vite and builds correctly.
+```powershell
+# Run in PowerShell from the project root
+@"
+node_modules/
+dist/
+.env
+.env.local
+"@ | Set-Content .gitignore
+```
+
+### Step 2 — Push to GitHub
+
+```bash
+git init
+git add .
+git commit -m "Initial commit — LAGAI Admissions Portal"
+git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+git push -u origin main
+```
+
+### Step 3 — Deploy on Vercel
+
+1. Go to [vercel.com](https://vercel.com) → **New Project**
+2. Import your GitHub repository
+3. Leave all settings as default (Vercel auto-detects Vite)
+4. Click **Deploy** ✅
 
 ### Option B — Vercel CLI
 
@@ -85,7 +116,7 @@ The app works without a backend using localStorage. When you're ready to go live
 ### Step 1 — Create a Supabase project
 
 1. Go to [supabase.com](https://supabase.com) → **New Project** (free)
-2. Choose a region close to your users
+2. Choose the region closest to Cape Verde (e.g. EU West)
 
 ### Step 2 — Run the schema
 
@@ -152,13 +183,13 @@ university-app/
 │   │       ├── StatusBadge.jsx     # Coloured status pills
 │   │       └── Modal.jsx           # Reusable modal
 │   ├── pages/
-│   │   ├── Landing.jsx             # Public landing page
+│   │   ├── Landing.jsx             # LAGAI public landing page
 │   │   ├── auth/
 │   │   │   ├── Login.jsx
 │   │   │   └── Register.jsx
 │   │   ├── student/
 │   │   │   ├── Dashboard.jsx
-│   │   │   ├── Programs.jsx        # Browse + filter
+│   │   │   ├── Programs.jsx        # Browse + filter LAGAI programmes
 │   │   │   ├── Apply.jsx           # 5-step wizard
 │   │   │   └── Applications.jsx    # Track status
 │   │   ├── recruiter/
@@ -195,15 +226,38 @@ university-app/
 
 ---
 
+## 🎓 LAGAI Programmes Loaded
+
+| Programme | Level | Duration | Fee |
+|---|---|---|---|
+| Double Honour Graduate Program | Postgraduate | 2 Years | €8,500 |
+| Dual Undergraduate Programs | Undergraduate | 3 Years | €6,500 |
+| Dual Graduate Programs | Postgraduate | 18 Months | €7,800 |
+| Dual Graduate Programs (Hybrid) | Postgraduate | 18 Months | €6,900 |
+| Dual Postgraduate Diploma & Certificate | Postgraduate | 12 Months | €4,500 |
+| Youth Vocational Training Program | Certificate | 6 Months | €1,200 |
+| Certificate & Award Programs | Certificate | 3 Months | €950 |
+| Train the Trainers Program | Certificate | 4 Months | €2,200 |
+| Languages & Ethics Programs | Certificate | 6 Months | €1,500 |
+
+---
+
+## 🌍 Accreditations
+
+QAHE · Europass · EVBB · EVTA · ALL Digital · EFVET · UNESCO Associated Schools Network 2030
+
+---
+
 ## 📈 Future Enhancements
 
 - [ ] Email notifications (Resend.com — free tier)
 - [ ] Offer letter PDF generation
 - [ ] Student payment integration (Stripe)
-- [ ] Analytics dashboard (Plausible — open source)
-- [ ] Multi-university support
+- [ ] Analytics dashboard
+- [ ] Multi-campus support (Praia · Lisbon · Frankfurt)
 - [ ] Scholarship tracking
 - [ ] Interview scheduling
+- [ ] WhatsApp notifications integration
 
 ---
 

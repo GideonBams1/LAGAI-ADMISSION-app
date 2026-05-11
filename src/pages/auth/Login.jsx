@@ -32,20 +32,23 @@ export default function Login() {
   }
 
   const DEMO_ACCOUNTS = [
-    { label: 'Student Demo',   email: 'student@demo.com',   password: 'demo123',  color: 'blue'   },
-    { label: 'Recruiter Demo', email: 'recruiter@demo.com', password: 'demo123',  color: 'purple' },
-    { label: 'Admin Demo',     email: 'admin@uniapply.com', password: 'admin123', color: 'gray'   },
+    { label: 'Student Demo',   email: 'student@demo.com',         password: 'demo123',  color: 'blue'   },
+    { label: 'Recruiter Demo', email: 'recruiter@demo.com',       password: 'demo123',  color: 'purple' },
+    { label: 'Admin Demo',     email: 'admin@laga-institute.org', password: 'admin123', color: 'gray'   },
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2 text-blue-700 font-bold text-xl">
-            <GraduationCap className="w-7 h-7" />
-            UniApply
+          <Link to="/" className="inline-flex items-center gap-2 text-gray-900 font-bold text-xl">
+            <div className="w-9 h-9 bg-gray-900 rounded-xl flex items-center justify-center">
+              <GraduationCap className="w-5 h-5 text-white" />
+            </div>
+            LAGAI
           </Link>
+          <p className="text-xs text-gray-400 mt-1 uppercase tracking-wider">Admissions Portal</p>
           <h1 className="text-2xl font-bold text-gray-900 mt-4">Welcome back</h1>
           <p className="text-gray-500 text-sm mt-1">Sign in to your account to continue</p>
         </div>

@@ -1,5 +1,5 @@
 -- ============================================================
--- UniApply – Supabase PostgreSQL Schema
+-- LAGAI – Supabase PostgreSQL Schema
 -- Run this in Supabase SQL Editor to set up the real backend
 -- ============================================================
 

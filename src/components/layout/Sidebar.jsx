@@ -56,7 +56,7 @@ export default function Sidebar() {
           <GraduationCap className="w-5 h-5 text-white" />
         </div>
         <div>
-          <p className="font-bold text-sm leading-none">UniApply</p>
+          <p className="font-bold text-sm leading-none">LAGAI</p>
           <p className="text-xs text-white/60 mt-0.5">{ROLE_LABELS[user?.role]}</p>
         </div>
       </div>

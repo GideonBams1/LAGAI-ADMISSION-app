@@ -61,15 +61,18 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2 text-blue-700 font-bold text-xl">
-            <GraduationCap className="w-7 h-7" />
-            UniApply
+          <Link to="/" className="inline-flex items-center gap-2 text-gray-900 font-bold text-xl">
+            <div className="w-9 h-9 bg-gray-900 rounded-xl flex items-center justify-center">
+              <GraduationCap className="w-5 h-5 text-white" />
+            </div>
+            LAGAI
           </Link>
+          <p className="text-xs text-gray-400 mt-1 uppercase tracking-wider">Admissions Portal</p>
           <h1 className="text-2xl font-bold text-gray-900 mt-4">Create your account</h1>
-          <p className="text-gray-500 text-sm mt-1">Join UniApply and start your journey</p>
+          <p className="text-gray-500 text-sm mt-1">Apply to LAGAI and begin your journey</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-8">
