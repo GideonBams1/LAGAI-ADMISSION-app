@@ -2,13 +2,17 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import {
   GraduationCap, Eye, EyeOff, AlertCircle, CheckCircle,
-  Users, User, Upload, FileText, X, ShieldCheck,
+  Users, User, Upload, FileText, X, ShieldCheck, Mail, RotateCcw,
 } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { GOOGLE_CLIENT_ID, initGoogleButton } from '../../lib/googleAuth'
+import {
+  generateCode, sendVerificationEmail, maskEmail,
+  CODE_TTL_MS, RESEND_WAIT_S,
+} from '../../lib/emailVerification'
 
-// ── File upload helpers ────────────────────────────────────────────────────────
-const MAX_FILE_BYTES = 2 * 1024 * 1024 // 2 MB
+// ── File helpers ───────────────────────────────────────────────────────────────
+const MAX_FILE_BYTES = 2 * 1024 * 1024
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -25,19 +29,16 @@ function formatBytes(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
-// ── DocUpload sub-component ────────────────────────────────────────────────────
+// ── DocUpload ─────────────────────────────────────────────────────────────────
 function DocUpload({ label, hint, required, doc, onFile, onRemove }) {
   const inputRef = useRef(null)
-
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-1.5">
         {label} {required && <span className="text-red-500">*</span>}
         {hint && <span className="ml-1 text-xs font-normal text-gray-400">{hint}</span>}
       </label>
-
       {doc ? (
-        /* Uploaded state */
         <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-xl px-4 py-3">
           <div className="flex items-center gap-2.5 min-w-0">
             <FileText className="w-4 h-4 text-green-600 flex-shrink-0" />
@@ -52,27 +53,122 @@ function DocUpload({ label, hint, required, doc, onFile, onRemove }) {
           </button>
         </div>
       ) : (
-        /* Drop zone */
         <div
           className="border-2 border-dashed border-gray-200 rounded-xl px-4 py-6 text-center hover:border-gray-400 transition-colors cursor-pointer"
           onClick={() => inputRef.current?.click()}>
           <Upload className="w-6 h-6 text-gray-300 mx-auto mb-2" />
           <p className="text-sm text-gray-500 font-medium">Click to upload</p>
           <p className="text-xs text-gray-400 mt-1">JPG, PNG or PDF · max 2 MB</p>
-          <input
-            ref={inputRef}
-            type="file"
+          <input ref={inputRef} type="file"
             accept="image/jpeg,image/png,image/jpg,application/pdf"
-            className="hidden"
-            onChange={onFile}
-          />
+            className="hidden" onChange={onFile} />
         </div>
       )}
     </div>
   )
 }
 
-// ── Main Register component ────────────────────────────────────────────────────
+// ── Verification screen ───────────────────────────────────────────────────────
+function VerifyScreen({ email, isDemo, demoCode, onVerify, onResend, resendTimer, verifyError, loading }) {
+  const [input, setInput] = useState('')
+
+  const submit = (e) => {
+    e.preventDefault()
+    onVerify(input.trim())
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <Link to="/" className="inline-flex items-center gap-2 text-gray-900 font-bold text-xl">
+            <div className="w-9 h-9 bg-gray-900 rounded-xl flex items-center justify-center">
+              <GraduationCap className="w-5 h-5 text-white" />
+            </div>
+            LAGAI
+          </Link>
+          <p className="text-xs text-gray-400 mt-1 uppercase tracking-wider">Email Verification</p>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+          <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-5">
+            <Mail className="w-8 h-8 text-blue-500" />
+          </div>
+
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Check your email</h2>
+          <p className="text-gray-500 text-sm mb-6">
+            We sent a 6-digit verification code to<br />
+            <strong className="text-gray-700">{maskEmail(email)}</strong>
+          </p>
+
+          {/* Demo mode banner */}
+          {isDemo && demoCode && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-left">
+              <p className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-1">
+                ⚠️ Demo Mode — EmailJS not configured
+              </p>
+              <p className="text-sm text-amber-800">
+                Your code is:{' '}
+                <span className="font-black text-lg tracking-widest">{demoCode}</span>
+              </p>
+              <p className="text-xs text-amber-600 mt-1">
+                Set up VITE_EMAILJS_* to send real emails.
+              </p>
+            </div>
+          )}
+
+          {verifyError && (
+            <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-3 mb-5">
+              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              {verifyError}
+            </div>
+          )}
+
+          <form onSubmit={submit} className="space-y-4">
+            <div>
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                value={input}
+                onChange={e => setInput(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                placeholder="000000"
+                className="input-field text-center text-3xl font-black tracking-[0.5em] py-4"
+                autoFocus
+              />
+              <p className="text-xs text-gray-400 mt-1.5">Code expires in 10 minutes</p>
+            </div>
+
+            <button type="submit" disabled={loading || input.length < 6}
+              className="btn-primary w-full justify-center py-3">
+              {loading ? 'Verifying…' : 'Verify Email'}
+            </button>
+          </form>
+
+          <div className="mt-5 pt-5 border-t border-gray-100">
+            {resendTimer > 0 ? (
+              <p className="text-sm text-gray-400">
+                Resend available in <strong className="text-gray-600">{resendTimer}s</strong>
+              </p>
+            ) : (
+              <button type="button" onClick={onResend}
+                className="inline-flex items-center gap-1.5 text-sm text-blue-600 font-medium hover:underline">
+                <RotateCcw className="w-3.5 h-3.5" /> Resend code
+              </button>
+            )}
+          </div>
+
+          <Link to="/register" onClick={() => window.location.reload()}
+            className="block mt-3 text-xs text-gray-400 hover:text-gray-600">
+            ← Back to registration
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Main Register component ───────────────────────────────────────────────────
 export default function Register() {
   const { register } = useAuth()
   const navigate = useNavigate()
@@ -86,14 +182,30 @@ export default function Register() {
     phone: '', nationality: '', dob: '',
     agency: '', agencyCountry: '',
   })
-  const [googleUser, setGoogleUser] = useState(null)
-  const [docs, setDocs] = useState({ id: null, business: null })
-  const [showPw, setShowPw] = useState(false)
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
+  const [googleUser, setGoogleUser]   = useState(null)
+  const [docs, setDocs]               = useState({ id: null, business: null })
+  const [showPw, setShowPw]           = useState(false)
+  const [error, setError]             = useState('')
+  const [loading, setLoading]         = useState(false)
+  const [success, setSuccess]         = useState(false)
 
-  // Pre-fill from Google if redirected from Login "no account found" flow
+  // ── Verification state ─────────────────────────────────────────────────────
+  const [verifyStep, setVerifyStep]   = useState(false)   // show verify screen?
+  const [sentCode, setSentCode]       = useState('')       // code we generated
+  const [codeExpiry, setCodeExpiry]   = useState(null)    // Date.now() + TTL
+  const [isDemo, setIsDemo]           = useState(false)
+  const [verifyError, setVerifyError] = useState('')
+  const [resendTimer, setResendTimer] = useState(0)
+  const [pendingData, setPendingData] = useState(null)    // saved until verified
+
+  // Resend countdown
+  useEffect(() => {
+    if (resendTimer <= 0) return
+    const t = setTimeout(() => setResendTimer(v => v - 1), 1000)
+    return () => clearTimeout(t)
+  }, [resendTimer])
+
+  // Pre-fill from Google redirect
   useEffect(() => {
     const stored = sessionStorage.getItem('google_prefill')
     if (stored) {
@@ -106,7 +218,7 @@ export default function Register() {
     }
   }, [])
 
-  // Keep callback ref current without re-initialising the SDK
+  // Google button callback
   googleCallbackRef.current = (payload) => {
     setGoogleUser({ name: payload.name, email: payload.email, googleId: payload.sub, picture: payload.picture })
     setForm(f => ({ ...f, name: payload.name || f.name, email: payload.email || f.email }))
@@ -115,38 +227,27 @@ export default function Register() {
 
   useEffect(() => {
     if (!GOOGLE_CLIENT_ID) return
-
     const mount = () => {
       if (!googleBtnRef.current) return
-      initGoogleButton(
-        googleBtnRef.current,
-        (payload) => googleCallbackRef.current(payload),
-        'continue_with'
-      )
+      initGoogleButton(googleBtnRef.current, (p) => googleCallbackRef.current(p), 'continue_with')
     }
-
-    if (window.googleSdkReady) {
-      mount()
-    } else {
-      window.addEventListener('google-sdk-loaded', mount, { once: true })
-    }
+    if (window.googleSdkReady) { mount() }
+    else { window.addEventListener('google-sdk-loaded', mount, { once: true }) }
     return () => window.removeEventListener('google-sdk-loaded', mount)
   }, [])
 
   const handle = (e) => setForm(f => ({ ...f, [e.target.name]: e.target.value }))
 
-  // ── File handling ────────────────────────────────────────────────────────────
+  // ── File handling ──────────────────────────────────────────────────────────
   const handleFile = async (e, type) => {
     const file = e.target.files?.[0]
     if (!file) return
     setError('')
-
     if (file.size > MAX_FILE_BYTES) {
-      setError(`"${file.name}" is too large. Maximum file size is 2 MB.`)
+      setError(`"${file.name}" exceeds the 2 MB limit.`)
       e.target.value = ''
       return
     }
-
     try {
       const data = await fileToBase64(file)
       setDocs(d => ({ ...d, [type]: { name: file.name, size: file.size, mimeType: file.type, data } }))
@@ -156,67 +257,155 @@ export default function Register() {
     e.target.value = ''
   }
 
-  // ── Submit ───────────────────────────────────────────────────────────────────
+  // ── Validate form (shared between submit paths) ────────────────────────────
+  const validateForm = () => {
+    const usingGoogle = !!googleUser
+    if (!form.name.trim() || !form.email.trim()) return 'Name and email are required.'
+    if (!/\S+@\S+\.\S+/.test(form.email)) return 'Please enter a valid email address.'
+    if (!usingGoogle) {
+      if (!form.password) return 'Please set a password.'
+      if (form.password.length < 6) return 'Password must be at least 6 characters.'
+      if (form.password !== form.confirmPassword) return 'Passwords do not match.'
+    }
+    if (role === 'recruiter' && !docs.id) return 'Please upload your means of identification.'
+    return null
+  }
+
+  // ── Build the final user data object ──────────────────────────────────────
+  const buildUserData = () => {
+    const usingGoogle = !!googleUser
+    return {
+      role,
+      name:        form.name.trim(),
+      email:       form.email.trim().toLowerCase(),
+      phone:       form.phone,
+      nationality: form.nationality,
+      ...(role === 'student'   ? { dob: form.dob } : {}),
+      ...(role === 'recruiter' ? { agency: form.agency, agencyCountry: form.agencyCountry } : {}),
+      authMethod: usingGoogle ? 'google' : 'email',
+      ...(usingGoogle
+        ? { googleId: googleUser.googleId, picture: googleUser.picture }
+        : { password: form.password }),
+      ...(role === 'recruiter' ? {
+        documents: {
+          identification:       docs.id,
+          businessRegistration: docs.business,
+        },
+      } : {}),
+    }
+  }
+
+  // ── Send verification code ─────────────────────────────────────────────────
+  const sendCode = async (userData) => {
+    const code = generateCode()
+    const expiry = Date.now() + CODE_TTL_MS
+    try {
+      const result = await sendVerificationEmail(userData.name, userData.email, code)
+      setSentCode(code)
+      setCodeExpiry(expiry)
+      setIsDemo(result.demo)
+      setPendingData(userData)
+      setVerifyStep(true)
+      setResendTimer(RESEND_WAIT_S)
+    } catch (err) {
+      throw new Error('Failed to send verification email. Please try again.')
+    }
+  }
+
+  // ── Form submit ────────────────────────────────────────────────────────────
   const submit = async (e) => {
     e.preventDefault()
     setError('')
 
-    const usingGoogle = !!googleUser
+    const validationError = validateForm()
+    if (validationError) { setError(validationError); return }
 
-    if (!form.name.trim() || !form.email.trim()) {
-      setError('Name and email are required.'); return
+    setLoading(true)
+    try {
+      // Google accounts skip email verification (already verified by Google)
+      if (googleUser) {
+        finaliseRegistration(buildUserData())
+        return
+      }
+      await sendCode(buildUserData())
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
     }
-    if (!usingGoogle) {
-      if (!form.password) { setError('Please set a password.'); return }
-      if (form.password.length < 6) { setError('Password must be at least 6 characters.'); return }
-      if (form.password !== form.confirmPassword) { setError('Passwords do not match.'); return }
+  }
+
+  // ── Verify code submitted ──────────────────────────────────────────────────
+  const verifyAndRegister = (inputCode) => {
+    setVerifyError('')
+
+    if (Date.now() > codeExpiry) {
+      setVerifyError('This code has expired. Please request a new one.')
+      return
     }
-    if (role === 'recruiter' && !docs.id) {
-      setError('Please upload your means of identification before submitting.')
+    if (inputCode !== sentCode) {
+      setVerifyError('Incorrect code. Please check your email and try again.')
       return
     }
 
     setLoading(true)
     try {
-      const userData = {
-        role,
-        name:        form.name.trim(),
-        email:       form.email.trim().toLowerCase(),
-        phone:       form.phone,
-        nationality: form.nationality,
-        ...(role === 'student'   ? { dob: form.dob } : {}),
-        ...(role === 'recruiter' ? { agency: form.agency, agencyCountry: form.agencyCountry } : {}),
-        authMethod: usingGoogle ? 'google' : 'email',
-        ...(usingGoogle
-          ? { googleId: googleUser.googleId, picture: googleUser.picture }
-          : { password: form.password }),
-        ...(role === 'recruiter' ? {
-          documents: {
-            identification:       docs.id,
-            businessRegistration: docs.business,
-          },
-        } : {}),
-      }
+      finaliseRegistration(pendingData)
+    } catch (err) {
+      setVerifyError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
 
+  // ── Resend code ────────────────────────────────────────────────────────────
+  const resend = async () => {
+    setVerifyError('')
+    setLoading(true)
+    try {
+      await sendCode(pendingData)
+    } catch (err) {
+      setVerifyError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // ── Final account creation ─────────────────────────────────────────────────
+  const finaliseRegistration = (userData) => {
+    try {
       register(userData)
-
-      if (role === 'recruiter') {
+      if (userData.role === 'recruiter') {
+        setVerifyStep(false)
         setSuccess(true)
       } else {
         navigate('/student/dashboard')
       }
     } catch (err) {
       if (err.name === 'QuotaExceededError' || err.message?.includes('quota')) {
-        setError('Storage limit reached. Try uploading smaller files (under 500 KB each).')
-      } else {
-        setError(err.message)
+        throw new Error('Storage limit reached. Try uploading smaller files (under 500 KB each).')
       }
-    } finally {
-      setLoading(false)
+      throw err
     }
   }
 
-  // ── Success screen (recruiter pending approval) ──────────────────────────────
+  // ── Verification screen ───────────────────────────────────────────────────
+  if (verifyStep) {
+    return (
+      <VerifyScreen
+        email={form.email}
+        isDemo={isDemo}
+        demoCode={isDemo ? sentCode : null}
+        onVerify={verifyAndRegister}
+        onResend={resend}
+        resendTimer={resendTimer}
+        verifyError={verifyError}
+        loading={loading}
+      />
+    )
+  }
+
+  // ── Success screen ────────────────────────────────────────────────────────
   if (success) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center p-4">
@@ -226,8 +415,8 @@ export default function Register() {
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Application Submitted!</h2>
           <p className="text-gray-500 mb-6">
-            Your recruiter account is pending admin approval. You'll receive access once reviewed.
-            Your uploaded documents have been saved for verification.
+            Your email has been verified and your recruiter account is pending admin approval.
+            You'll receive access once your documents have been reviewed.
           </p>
           <Link to="/login" className="btn-primary w-full justify-center py-2.5">Go to Login</Link>
         </div>
@@ -235,12 +424,11 @@ export default function Register() {
     )
   }
 
-  // ── Registration form ────────────────────────────────────────────────────────
+  // ── Registration form ─────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-4 py-12">
       <div className="w-full max-w-lg">
 
-        {/* Header */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 text-gray-900 font-bold text-xl">
             <div className="w-9 h-9 bg-gray-900 rounded-xl flex items-center justify-center">
@@ -275,7 +463,6 @@ export default function Register() {
             ))}
           </div>
 
-          {/* Error */}
           {error && (
             <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-3 mb-5">
               <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
@@ -283,7 +470,6 @@ export default function Register() {
             </div>
           )}
 
-          {/* Recruiter approval notice */}
           {role === 'recruiter' && (
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-5 text-xs text-amber-700 flex items-start gap-2">
               <ShieldCheck className="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-500" />
@@ -292,7 +478,7 @@ export default function Register() {
             </div>
           )}
 
-          {/* Google Sign-Up button (shown until Google is connected) */}
+          {/* Google Sign-Up */}
           {GOOGLE_CLIENT_ID && !googleUser && (
             <>
               <div ref={googleBtnRef} className="flex justify-center mb-4 min-h-[44px]" />
@@ -316,7 +502,7 @@ export default function Register() {
                 }
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-blue-900 truncate">{googleUser.name}</p>
-                  <p className="text-xs text-blue-600 truncate">{googleUser.email} · via Google</p>
+                  <p className="text-xs text-blue-600 truncate">{googleUser.email} · via Google ✓</p>
                 </div>
               </div>
               <button type="button"
@@ -328,23 +514,23 @@ export default function Register() {
           )}
 
           <form onSubmit={submit} className="space-y-4">
-
-            {/* Core fields */}
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name *</label>
                 <input name="name" value={form.name} onChange={handle}
-                  placeholder="Jane Doe" className="input-field"
-                  readOnly={!!googleUser} />
+                  placeholder="Jane Doe" className="input-field" readOnly={!!googleUser} />
               </div>
               <div className="col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Email Address *</label>
                 <input name="email" type="email" value={form.email} onChange={handle}
-                  placeholder="you@example.com" className="input-field"
-                  readOnly={!!googleUser} />
+                  placeholder="you@example.com" className="input-field" readOnly={!!googleUser} />
+                {!googleUser && (
+                  <p className="text-xs text-gray-400 mt-1">
+                    A 6-digit verification code will be sent to this address.
+                  </p>
+                )}
               </div>
 
-              {/* Password fields — hidden when signed in with Google */}
               {!googleUser && (
                 <>
                   <div>
@@ -410,7 +596,6 @@ export default function Register() {
                     Files are stored securely and not shared with third parties.
                   </p>
                 </div>
-
                 <DocUpload
                   label="Means of Identification"
                   hint="Passport, National ID, or Driver's Licence"
@@ -419,7 +604,6 @@ export default function Register() {
                   onFile={(e) => handleFile(e, 'id')}
                   onRemove={() => setDocs(d => ({ ...d, id: null }))}
                 />
-
                 <DocUpload
                   label="Business / Company Registration Certificate"
                   hint="Optional — if you represent a registered company"
@@ -430,13 +614,12 @@ export default function Register() {
               </div>
             )}
 
-            <button type="submit" disabled={loading}
-              className="btn-primary w-full justify-center py-2.5 mt-2">
+            <button type="submit" disabled={loading} className="btn-primary w-full justify-center py-2.5 mt-2">
               {loading
-                ? 'Submitting…'
-                : role === 'recruiter'
-                  ? 'Submit Application for Approval'
-                  : 'Create Account'}
+                ? 'Sending code…'
+                : googleUser
+                  ? role === 'recruiter' ? 'Submit Application for Approval' : 'Create Account'
+                  : 'Send Verification Code'}
             </button>
           </form>
 
