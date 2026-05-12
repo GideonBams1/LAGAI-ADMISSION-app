@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Users, Search, CheckCircle, XCircle, Edit2, Globe, Phone, Calendar, DollarSign } from 'lucide-react'
+import { Users, Search, CheckCircle, XCircle, Edit2, Globe, Phone, Calendar, DollarSign, FileText, ExternalLink, ShieldCheck } from 'lucide-react'
 import PageLayout from '../../components/layout/PageLayout'
 import Modal from '../../components/ui/Modal'
 import StatusBadge from '../../components/ui/StatusBadge'
@@ -109,6 +109,35 @@ export default function AdminRecruiters() {
                         {r.phone  && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{r.phone}</span>}
                         <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />Joined {new Date(r.createdAt).toLocaleDateString()}</span>
                       </div>
+                      {/* Uploaded documents */}
+                      {r.documents && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {r.documents.identification && (
+                            <button
+                              onClick={() => window.open(r.documents.identification.data, '_blank')}
+                              className="inline-flex items-center gap-1.5 text-xs bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-lg hover:bg-blue-100 transition-colors">
+                              <FileText className="w-3 h-3" />
+                              ID: {r.documents.identification.name}
+                              <ExternalLink className="w-3 h-3 opacity-60" />
+                            </button>
+                          )}
+                          {r.documents.businessRegistration && (
+                            <button
+                              onClick={() => window.open(r.documents.businessRegistration.data, '_blank')}
+                              className="inline-flex items-center gap-1.5 text-xs bg-purple-50 text-purple-700 border border-purple-200 px-2.5 py-1 rounded-lg hover:bg-purple-100 transition-colors">
+                              <ShieldCheck className="w-3 h-3" />
+                              Co. Reg: {r.documents.businessRegistration.name}
+                              <ExternalLink className="w-3 h-3 opacity-60" />
+                            </button>
+                          )}
+                          {!r.documents.identification && !r.documents.businessRegistration && (
+                            <span className="text-xs text-gray-400 italic">No documents uploaded</span>
+                          )}
+                        </div>
+                      )}
+                      {!r.documents && !r.approved && (
+                        <p className="text-xs text-amber-600 mt-1 italic">No documents on file (legacy account)</p>
+                      )}
                     </div>
                   </div>
 

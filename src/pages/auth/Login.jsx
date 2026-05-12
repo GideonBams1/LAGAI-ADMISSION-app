@@ -1,16 +1,67 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { GraduationCap, Eye, EyeOff, AlertCircle } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
+import { GOOGLE_CLIENT_ID, initGoogleButton } from '../../lib/googleAuth'
 
 export default function Login() {
-  const { login } = useAuth()
+  const { login, loginWithGoogle } = useAuth()
   const navigate = useNavigate()
 
   const [form, setForm] = useState({ email: '', password: '' })
   const [showPw, setShowPw] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const googleBtnRef = useRef(null)
+  const googleCallbackRef = useRef(null)
+
+  // Keep the Google callback up-to-date without re-initialising the SDK
+  googleCallbackRef.current = (payload) => {
+    setError('')
+    setLoading(true)
+    try {
+      const result = loginWithGoogle(payload)
+      if (!result) {
+        // No account found — send to register, pre-fill via sessionStorage
+        sessionStorage.setItem('google_prefill', JSON.stringify({
+          name: payload.name, email: payload.email,
+          googleId: payload.sub, picture: payload.picture,
+        }))
+        navigate('/register')
+        return
+      }
+      navigate(
+        result.role === 'admin'     ? '/admin/dashboard'     :
+        result.role === 'recruiter' ? '/recruiter/dashboard' :
+                                      '/student/dashboard'
+      )
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Render the Google button once the SDK is ready
+  useEffect(() => {
+    if (!GOOGLE_CLIENT_ID) return
+
+    const mount = () => {
+      if (!googleBtnRef.current) return
+      initGoogleButton(
+        googleBtnRef.current,
+        (payload) => googleCallbackRef.current(payload),
+        'signin_with'
+      )
+    }
+
+    if (window.googleSdkReady) {
+      mount()
+    } else {
+      window.addEventListener('google-sdk-loaded', mount, { once: true })
+    }
+    return () => window.removeEventListener('google-sdk-loaded', mount)
+  }, [])
 
   const handle = (e) => setForm(f => ({ ...f, [e.target.name]: e.target.value }))
 
@@ -21,9 +72,11 @@ export default function Login() {
     setLoading(true)
     try {
       const user = login(form.email, form.password)
-      navigate(user.role === 'admin' ? '/admin/dashboard'
-        : user.role === 'recruiter' ? '/recruiter/dashboard'
-        : '/student/dashboard')
+      navigate(
+        user.role === 'admin'     ? '/admin/dashboard'     :
+        user.role === 'recruiter' ? '/recruiter/dashboard' :
+                                    '/student/dashboard'
+      )
     } catch (err) {
       setError(err.message)
     } finally {
@@ -40,6 +93,7 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
+
         {/* Logo */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 text-gray-900 font-bold text-xl">
@@ -55,13 +109,36 @@ export default function Login() {
 
         {/* Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
+
           {error && (
-            <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-3 mb-5">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
-              {error}
+            <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-3 mb-5">
+              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              <span>{error}</span>
             </div>
           )}
 
+          {/* ── Google Sign-In ── */}
+          {GOOGLE_CLIENT_ID ? (
+            <>
+              <div ref={googleBtnRef} className="flex justify-center mb-4 min-h-[44px]" />
+              <div className="flex items-center gap-3 mb-5">
+                <div className="flex-1 h-px bg-gray-200" />
+                <span className="text-xs text-gray-400 font-medium">or sign in with email</span>
+                <div className="flex-1 h-px bg-gray-200" />
+              </div>
+            </>
+          ) : (
+            <div className="mb-5 text-center">
+              <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                Google Sign-In not configured.{' '}
+                <a href="https://console.cloud.google.com" target="_blank" rel="noreferrer" className="underline font-medium">
+                  Set up VITE_GOOGLE_CLIENT_ID
+                </a>{' '}to enable it.
+              </p>
+            </div>
+          )}
+
+          {/* ── Email / Password form ── */}
           <form onSubmit={submit} className="space-y-5">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Email address</label>
@@ -119,6 +196,7 @@ export default function Login() {
             })}
           </div>
         </div>
+
       </div>
     </div>
   )

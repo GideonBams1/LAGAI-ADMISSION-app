@@ -10,6 +10,7 @@ const SEED_USERS = [
     email: 'admin@laga-institute.org',
     password: 'admin123',
     role: 'admin',
+    authMethod: 'email',
     createdAt: new Date('2024-01-01').toISOString(),
     approved: true,
   },
@@ -19,6 +20,7 @@ const SEED_USERS = [
     email: 'student@demo.com',
     password: 'demo123',
     role: 'student',
+    authMethod: 'email',
     phone: '+238-555-0101',
     nationality: 'Cape Verdean',
     dob: '2001-06-20',
@@ -31,6 +33,7 @@ const SEED_USERS = [
     email: 'recruiter@demo.com',
     password: 'demo123',
     role: 'recruiter',
+    authMethod: 'email',
     agency: 'Luso-German Education Network',
     agencyCountry: 'Germany',
     phone: '+49-176-42954200',
@@ -61,7 +64,6 @@ export function AuthProvider({ children }) {
     if (stored) {
       try {
         const session = JSON.parse(stored)
-        // Re-fetch user to pick up any updates
         const users = getUsers()
         const fresh = users.find(u => u.id === session.id)
         if (fresh) setUser(fresh)
@@ -70,18 +72,55 @@ export function AuthProvider({ children }) {
     setLoading(false)
   }, [])
 
-  // ── Login ──────────────────────────────────────────────────────────────────
+  // ── Email / Password Login ─────────────────────────────────────────────────
   const login = (email, password) => {
     const users = getUsers()
-    const found = users.find(
-      u => u.email.toLowerCase() === email.toLowerCase() && u.password === password
-    )
+    const found = users.find(u => u.email.toLowerCase() === email.toLowerCase())
+
     if (!found) throw new Error('Invalid email or password.')
+
+    // Account was created via Google — must sign in with Google
+    if (found.authMethod === 'google') {
+      throw new Error('This account uses Google Sign-In. Please click "Continue with Google" below.')
+    }
+
+    if (found.password !== password) throw new Error('Invalid email or password.')
+
     if (!found.approved && found.role === 'recruiter')
       throw new Error('Your recruiter account is pending admin approval.')
+
     setUser(found)
     localStorage.setItem('ua_session', JSON.stringify({ id: found.id }))
     return found
+  }
+
+  // ── Google Login / Auto-register ───────────────────────────────────────────
+  // Returns the user if found, or null if no account exists (register needed).
+  const loginWithGoogle = (googlePayload) => {
+    const { email, name, sub: googleId, picture } = googlePayload
+    const users = getUsers()
+    let found = users.find(u => u.email.toLowerCase() === email.toLowerCase())
+
+    if (found) {
+      if (!found.approved && found.role === 'recruiter')
+        throw new Error('Your recruiter account is pending admin approval.')
+
+      // Link Google ID to existing email/password account if not already linked
+      if (!found.googleId) {
+        const updated = users.map(u =>
+          u.id === found.id ? { ...u, googleId, picture: picture || u.picture } : u
+        )
+        saveUsers(updated)
+        found = updated.find(u => u.id === found.id)
+      }
+
+      setUser(found)
+      localStorage.setItem('ua_session', JSON.stringify({ id: found.id }))
+      return found
+    }
+
+    // No account found — signal to the caller to redirect to register
+    return null
   }
 
   // ── Register ───────────────────────────────────────────────────────────────
@@ -93,10 +132,13 @@ export function AuthProvider({ children }) {
     const newUser = {
       id: `${data.role}-${Date.now()}`,
       createdAt: new Date().toISOString(),
-      approved: data.role !== 'recruiter', // recruiters need admin approval
+      approved: data.role !== 'recruiter',
       commissionRate: data.role === 'recruiter' ? 10 : undefined,
       ...data,
+      // Never persist confirmPassword
+      confirmPassword: undefined,
     }
+
     saveUsers([...users, newUser])
 
     if (newUser.approved) {
@@ -110,6 +152,10 @@ export function AuthProvider({ children }) {
   const logout = () => {
     setUser(null)
     localStorage.removeItem('ua_session')
+    // Also sign out from Google so their account chooser shows on next login
+    if (window.google?.accounts?.id) {
+      window.google.accounts.id.disableAutoSelect()
+    }
   }
 
   // ── Update current user ────────────────────────────────────────────────────
@@ -129,7 +175,6 @@ export function AuthProvider({ children }) {
     const users = getUsers()
     const updated = users.map(u => u.id === userId ? { ...u, ...updates } : u)
     saveUsers(updated)
-    // If admin updated the logged-in user, refresh session
     if (user && user.id === userId) {
       setUser(updated.find(u => u.id === userId))
     }
@@ -148,7 +193,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, updateUser, getAllUsers, updateAnyUser }}>
+    <AuthContext.Provider value={{ user, login, loginWithGoogle, register, logout, updateUser, getAllUsers, updateAnyUser }}>
       {children}
     </AuthContext.Provider>
   )
